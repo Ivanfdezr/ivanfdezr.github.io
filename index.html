@@ -36,6 +36,8 @@
 	<body>
 
 		<div class="radarChart1"></div>
+		<svg width="200" height="200" id="svg1"></svg>
+		<svg width="200" height="200" id="svg2"></svg>
 
 		<script src="RadarChart_repository/radarChart.js"></script>	
 		<script>
@@ -101,12 +103,11 @@
 			  color: color
 			};
 			//Call function to draw the Radar chart
-			RadarChart(".radarChart1", data, radarChartOptions);
+			RadarChart("#svg1", data, radarChartOptions);
 		</script>
 
-		<div class="radarChart2"></div>
+		<!-- <div class="radarChart2"></div> -->
 
-		<script src="RadarChart_repository/radarChart.js"></script>	
 		<script>
       
       /* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
@@ -170,7 +171,7 @@
 			  color: color
 			};
 			//Call function to draw the Radar chart
-			RadarChart(".radarChart2", data, radarChartOptions);
+			RadarChart("#svg2", data, radarChartOptions);
 		</script>
 	</body>
 </html> 
