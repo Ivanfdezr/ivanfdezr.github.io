@@ -10,7 +10,7 @@
 
 		<!-- D3.js -->
 		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script> -->
-		<script src="https://d3js.org/d3.v4.js"></script>
+		<script src="https://d3js.org/d3.v5.js"></script>
 		
 		<style>
 			body {
@@ -57,158 +57,173 @@
 				width = 400 - margin.left - margin.right,
 				height = 350 - margin.top - margin.bottom;
 
+			var margin1 = {top: 50, right: 50, bottom: 50, left: 50},
+				width1 = Math.min(300, window.innerWidth - 10) - margin1.left - margin1.right,
+				height1 = Math.min(width1, window.innerHeight - margin1.top - margin1.bottom - 20);
+
 			// append the svg object to the body of the page
 			var svg = d3.select("#svg0")
 				.append("svg")
 				.attr("width", width + margin.left + margin.right)
 				.attr("height", height + margin.top + margin.bottom)
 				.append("g")
-				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+			
+			//var data = d3.csvParse(await FileAttachment("DESGLOSE.csv").text(), d3.autoType);
 
 			//Read the data
-			d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/DESGLOSE.csv", function(data) {
+			//https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/DESGLOSE.csv
+			Promise.all([
+				d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/DESGLOSE.csv"), 
+				d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/PROMEDIOSporActivo.csv"),
+				d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/PROMEDIOSporDM.csv"),
+				d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/PROMEDIOSporCurso.csv")
+			]).then(function(data) {
+				console.log(data[0][0]);  // first row of cities
+				console.log(data[1][0]);  // first row of animals
+		
+				// Add X axis
+				var x = d3.scaleLinear()
+					.domain([6, 50])
+					.range([ 0, width*1.5 ]);
+				svg.append("g")
+					.attr("transform", "translate(0," + height + ")")
+					.call(d3.axisBottom(x));
 
-			// Add X axis
-			var x = d3.scaleLinear()
-				.domain([6, 50])
-				.range([ 0, width*1.5 ]);
-			svg.append("g")
-				.attr("transform", "translate(0," + height + ")")
-				.call(d3.axisBottom(x));
+				// Add Y axis
+				var y = d3.scaleLinear()
+					.domain([0, 100])
+					.range([ height, 0]);
+				svg.append("g")
+					.call(d3.axisLeft(y));
 
-			// Add Y axis
-			var y = d3.scaleLinear()
-				.domain([0, 100])
-				.range([ height, 0]);
-			svg.append("g")
-				.call(d3.axisLeft(y));
+				var color = d3.scaleOrdinal()
+					.range(["#EDC951","#CC333F","#00A0B0","#10B020"]);
 
-			
-			var color = d3.scaleOrdinal()
-				.range(["#EDC951","#CC333F","#00A0B0","#F0A000"]);
+				var tooltip = svg.append("text")
+					.attr("class", "tooltip")
+					.style("opacity", 0);
+
+				var clickTooltip1 = svg.append("text")
+					.attr("class", "tooltip")
+					.style("opacity", 0)
+					.attr("idx", 0);
+
+				var clickTooltip2 = svg.append("text")
+					.attr("class", "tooltip")
+					.style("opacity", 0)
+					.attr("idx", 0);
+
+				// Add dots
+				svg.append('g')
+					.selectAll("dot")
+						.data(data[0])
+						.enter()
+						.append("circle")
+							.attr("cx", function (d) { return x(d["Antiguedad"]); } )
+							.attr("cy", function (d) { return y(d.Completo); } )
+							.attr("r", 6)
+							.style("fill", function(d,i) { return color(d.ActivoIndex); } )
+							.style("opacity", 0.3)
+						//.style("fill", "#69b3a2")
+						.on("mouseover", function(d,i) {
+							newX = parseFloat(d3.select(this).attr('cx')) - 10;
+							newY = parseFloat(d3.select(this).attr('cy')) - 10;
+									
+							tooltip.transition().duration(20)
+								.text(d.Nombre)
+								.attr('x', newX)
+								.attr('y', newY)
+								.style('opacity', 1);
+
+							console.log(data[0][ix].Nombre);
+							console.log(ix);
+						})
+						.on("mouseout", function(){
+							tooltip.transition().duration(200)
+								.style("opacity", 0);
+						})
+						.on("click", function(d,i){
+							newX = parseFloat(d3.select(this).attr('cx')) - 10;
+							newY = parseFloat(d3.select(this).attr('cy')) - 10;
+									
+							clickTooltip1.transition().duration(200)
+								.text(d.Nombre)
+								.attr('x', newX)
+								.attr('y', newY)
+								.style('opacity', 1);
+
+							clickTooltip2.transition().duration(200)
+								.text(d.Activo)
+								.attr('x', newX)
+								.attr('y', newY+10)
+								.style('opacity', 1);
+
+							console.log(ix);
+							ix = i;
+							console.log(ix);
 
 
-
-			// Add a tooltip div. Here I define the general feature of the tooltip: stuff that do not depend on the data point.
-			// Its opacity is set to 0: we don't see it by default.
-			
-
-			// A function that change this tooltip when the user hover a point.
-			// Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
-			
-
-
-			// Add dots
-			svg.append('g')
-				.selectAll("dot")
-				.data(data)
-				.enter()
-				.append("circle")
-					.attr("cx", function (d) { return x(d.Antiguedad); } )
-					.attr("cy", function (d) { return y(d.Completo); } )
-					.attr("r", 6)
-					.style("fill", function(d,i) { return color(i); } )
-					.style("opacity", 0.3)
-				//.style("fill", "#69b3a2")
-				.on("mouseover", function(d,i) {
-					newX =  parseFloat(d3.select(this).attr('cx')) - 10;
-					newY =  parseFloat(d3.select(this).attr('cy')) - 10;
+							console.log( data[0][ix].Ingles/100 );
+							console.log( data[1][data[0][ix].ActivoIndex].Ingles/100 );
 
 							
-					tooltip
-						.attr('x', newX)
-						.attr('y', newY)
-						.text(d.Activo)
-						.transition().duration(200)
-						.style('opacity', 1);
+							var data1 = [
+											[//iPhone
+												{axis:'Ingles',value:data[0][ix].Ingles/100},
+												{axis:'Software',value:data[0][ix].Software/100},
+												{axis:'Perforacion',value:data[0][ix].Perforacion/100},
+												{axis:'Terminacion',value:data[0][ix].Terminacion/100},
+												{axis:'Reparacion',value:data[0][ix].Reparacion/100}			
+											],[//Samsung
+												{axis:'Ingles',value:data[1][data[0][ix].ActivoIndex].Ingles/100},
+												{axis:'Software',value:data[1][data[0][ix].ActivoIndex].Software/100},
+												{axis:'Perforacion',value:data[1][data[0][ix].ActivoIndex].Perforacion/100},
+												{axis:'Terminacion',value:data[1][data[0][ix].ActivoIndex].Terminacion/100},
+												{axis:'Reparacion',value:data[1][data[0][ix].ActivoIndex].Reparacion/100}
+											]
+										];
+							/*
+
+							var data1 = [[
+											{axis:'a',value:0.5666666666666666667},
+											{axis:'b',value:0.54},
+											{axis:'c',value:0.76}
+										],[
+											{axis:'a',value:0.12},
+											{axis:'b',value:0.6},
+											{axis:'c',value:0.57}
+										]];
+							*/
+
+							console.log( data1 );
+
+							var color = d3.scaleOrdinal()
+								.range(["#EDC951","#CC333F","#00A0B0","#F0A000"]);
+								
+							var radarChartOptions = {
+									w: width1,
+									h: height1,
+									margin: margin1,
+									maxValue: 1,
+									levels: 5,
+									roundStrokes: true,
+									color: color
+							};
+							//Call function to draw the Radar chart
+							RadarChart("#svg1", data1, radarChartOptions);
+							//RadarChart("#svg2", data, radarChartOptions);
+							//RadarChart("#svg3", data, radarChartOptions);
+							//RadarChart("#svg4", data, radarChartOptions);
+							//RadarChart("#svg5", data, radarChartOptions);
+							//RadarChart("#svg6", data, radarChartOptions);
+
 				})
-				.on("mouseout", function(){
-					tooltip.transition().duration(200)
-						.style("opacity", 0);
-				});
+	
+				var ix = 0;
+			});
 
-			var tooltip = svg.append("text")
-				.attr("class", "tooltip")
-				.style("opacity", 0);
-
-			})
-
-
-			/* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
-			////////////////////////////////////////////////////////////// 
-			//////////////////////// Set-Up ////////////////////////////// 
-			////////////////////////////////////////////////////////////// 
-
-			var margin = {top: 50, right: 50, bottom: 50, left: 50},
-				width = Math.min(300, window.innerWidth - 10) - margin.left - margin.right,
-				height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
-					
-			////////////////////////////////////////////////////////////// 
-			////////////////////////// Data ////////////////////////////// 
-			////////////////////////////////////////////////////////////// 
-
-			var data = [
-							[//iPhone
-						{axis:"Battery Life",value:0.25},
-						{axis:"Brand",value:0.28},
-						{axis:"Contract Cost",value:0.29},
-						{axis:"Design And Quality",value:0.17},
-						{axis:"Have Internet Connectivity",value:0.22},
-						{axis:"Large Screen",value:0.02},
-						{axis:"Price Of Device",value:0.21},
-						{axis:"To Be A Smartphone",value:0.50}			
-							],[//Samsung
-						{axis:"Battery Life",value:0.27},
-						{axis:"Brand",value:0.16},
-						{axis:"Contract Cost",value:0.35},
-						{axis:"Design And Quality",value:0.13},
-						{axis:"Have Internet Connectivity",value:0.20},
-						{axis:"Large Screen",value:0.13},
-						{axis:"Price Of Device",value:0.35},
-						{axis:"To Be A Smartphone",value:0.38}
-							],[//Nokia Smartphone
-						{axis:"Battery Life",value:0.26},
-						{axis:"Brand",value:0.10},
-						{axis:"Contract Cost",value:0.30},
-						{axis:"Design And Quality",value:0.14},
-						{axis:"Have Internet Connectivity",value:0.22},
-						{axis:"Large Screen",value:0.04},
-						{axis:"Price Of Device",value:0.41},
-						{axis:"To Be A Smartphone",value:0.30}
-							],[//Nokia Smartphone
-						{axis:"Battery Life",value:0.5},
-						{axis:"Brand",value:0.15},
-						{axis:"Contract Cost",value:0.05},
-						{axis:"Design And Quality",value:0.19},
-						{axis:"Have Internet Connectivity",value:0.12},
-						{axis:"Large Screen",value:0.1},
-						{axis:"Price Of Device",value:0.09},
-						{axis:"To Be A Smartphone",value:0.35}
-							]
-					];
-			////////////////////////////////////////////////////////////// 
-			//////////////////// Draw the Chart ////////////////////////// 
-			////////////////////////////////////////////////////////////// 
-
-			var color = d3.scaleOrdinal()
-				.range(["#EDC951","#CC333F","#00A0B0","#F0A000"]);
-				
-			var radarChartOptions = {
-					w: width,
-					h: height,
-					margin: margin,
-					maxValue: 0.5,
-					levels: 5,
-					roundStrokes: true,
-					color: color
-			};
-			//Call function to draw the Radar chart
-			RadarChart("#svg1", data, radarChartOptions);
-			RadarChart("#svg2", data, radarChartOptions);
-			RadarChart("#svg3", data, radarChartOptions);
-			RadarChart("#svg4", data, radarChartOptions);
-			RadarChart("#svg5", data, radarChartOptions);
-			RadarChart("#svg6", data, radarChartOptions);
 		</script>
 
 	</body>

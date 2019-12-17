@@ -5,13 +5,12 @@
 		<title>Smoothed D3.js Radar Chart</title>
 
 		<!-- Google fonts -->
-		<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300" rel='stylesheet' type='text/css'>
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300" rel='stylesheet' type='text/css'>
 		<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
 
 		<!-- D3.js -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-		<svg width="200" height="200" id="svg1"></svg>
-		<svg width="200" height="200" id="svg2"></svg>
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script> -->
+		<script src="https://d3js.org/d3.v4.js"></script>
 		
 		<style>
 			body {
@@ -36,19 +35,170 @@
 	
 	</head>
 	<body>
+
+		<div class="radarChart12"></div>
+		<svg width="400" height="350" id="svg0"></svg>
+		<svg width="350" height="350" id="svg1"></svg>
+		<svg width="350" height="350" id="svg2"></svg>
+
+		<div class="radarChart34"></div>
+		<svg width="350" height="350" id="svg3"></svg>
+		<svg width="350" height="350" id="svg4"></svg>
+
+		<!-- <div class="radarChart56"></div> -->
+		<svg width="350" height="350" id="svg5"></svg>
+		<svg width="350" height="350" id="svg6"></svg>
+
+		<script src="RadarChart_repository/radarChart.js"></script>	
 		<script>
-			var svg1 = d3.select("#svg1");
-			svg1.append("circle")
-				.attr("cx",100)
-				.attr("cy", 100)
-				.attr("r", 90)
-				.attr("fill", "red");
-			var svg2 = d3.select("#svg2");
-			svg2.append("circle")
-				.attr("cx",100)
-				.attr("cy", 100)
-				.attr("r", 90)
-				.attr("fill", "blue");
+				
+			// set the dimensions and margins of the graph
+			var margin = {top: 60, right: 30, bottom: 30, left: 60},
+				width = 400 - margin.left - margin.right,
+				height = 350 - margin.top - margin.bottom;
+
+			// append the svg object to the body of the page
+			var svg = d3.select("#svg0")
+				.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			//Read the data
+			d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/DESGLOSE.csv", function(data)
+			{
+
+				// Add X axis
+				var x = d3.scaleLinear()
+					.domain([6, 50])
+					.range([ 0, width*1.5 ]);
+				svg.append("g")
+					.attr("transform", "translate(0," + height + ")")
+					.call(d3.axisBottom(x));
+
+				// Add Y axis
+				var y = d3.scaleLinear()
+					.domain([0, 100])
+					.range([ height, 0]);
+				svg.append("g")
+					.call(d3.axisLeft(y));
+
+				var color = d3.scaleOrdinal()
+					.range(["#EDC951","#CC333F","#00A0B0","#10B020"]);
+
+				// Add dots
+				svg.append('g')
+					.selectAll("dot")
+					.data(data)
+					.enter()
+					.append("circle")
+						.attr("cx", function (d) { return x(d["Años de Experiencia en campo"]); } )
+						.attr("cy", function (d) { return y(d.Completo); } )
+						.attr("r", 6)
+						.style("fill", function(d,i) { return color(d.ActivoIndex); } )
+						.style("opacity", 0.3)
+					//.style("fill", "#69b3a2")
+					.on("mouseover", function(d,i) {
+						newX =  parseFloat(d3.select(this).attr('cx')) - 10;
+						newY =  parseFloat(d3.select(this).attr('cy')) - 10;
+
+								
+						tooltip
+							.attr('x', newX)
+							.attr('y', newY)
+							.text(d.Activo)
+							.transition().duration(200)
+							.style('opacity', 1);
+					})
+					.on("mouseout", function(){
+						tooltip.transition().duration(200)
+							.style("opacity", 0);
+					});
+
+				var tooltip = svg.append("text")
+					.attr("class", "tooltip")
+					.style("opacity", 0);
+
+			})
+
+
+			/* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
+			////////////////////////////////////////////////////////////// 
+			//////////////////////// Set-Up ////////////////////////////// 
+			////////////////////////////////////////////////////////////// 
+
+			var margin = {top: 50, right: 50, bottom: 50, left: 50},
+				width = Math.min(300, window.innerWidth - 10) - margin.left - margin.right,
+				height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+					
+			////////////////////////////////////////////////////////////// 
+			////////////////////////// Data ////////////////////////////// 
+			////////////////////////////////////////////////////////////// 
+
+			var data = [
+							[//iPhone
+						{axis:"Battery Life",value:0.25},
+						{axis:"Brand",value:0.28},
+						{axis:"Contract Cost",value:0.29},
+						{axis:"Design And Quality",value:0.17},
+						{axis:"Have Internet Connectivity",value:0.22},
+						{axis:"Large Screen",value:0.02},
+						{axis:"Price Of Device",value:0.21},
+						{axis:"To Be A Smartphone",value:0.50}			
+							],[//Samsung
+						{axis:"Battery Life",value:0.27},
+						{axis:"Brand",value:0.16},
+						{axis:"Contract Cost",value:0.35},
+						{axis:"Design And Quality",value:0.13},
+						{axis:"Have Internet Connectivity",value:0.20},
+						{axis:"Large Screen",value:0.13},
+						{axis:"Price Of Device",value:0.35},
+						{axis:"To Be A Smartphone",value:0.38}
+							],[//Nokia Smartphone
+						{axis:"Battery Life",value:0.26},
+						{axis:"Brand",value:0.10},
+						{axis:"Contract Cost",value:0.30},
+						{axis:"Design And Quality",value:0.14},
+						{axis:"Have Internet Connectivity",value:0.22},
+						{axis:"Large Screen",value:0.04},
+						{axis:"Price Of Device",value:0.41},
+						{axis:"To Be A Smartphone",value:0.30}
+							],[//Nokia Smartphone
+						{axis:"Battery Life",value:0.5},
+						{axis:"Brand",value:0.15},
+						{axis:"Contract Cost",value:0.05},
+						{axis:"Design And Quality",value:0.19},
+						{axis:"Have Internet Connectivity",value:0.12},
+						{axis:"Large Screen",value:0.1},
+						{axis:"Price Of Device",value:0.09},
+						{axis:"To Be A Smartphone",value:0.35}
+							]
+					];
+			////////////////////////////////////////////////////////////// 
+			//////////////////// Draw the Chart ////////////////////////// 
+			////////////////////////////////////////////////////////////// 
+
+			var color = d3.scaleOrdinal()
+				.range(["#EDC951","#CC333F","#00A0B0","#F0A000"]);
+				
+			var radarChartOptions = {
+					w: width,
+					h: height,
+					margin: margin,
+					maxValue: 0.5,
+					levels: 5,
+					roundStrokes: true,
+					color: color
+			};
+			//Call function to draw the Radar chart
+			RadarChart("#svg1", data, radarChartOptions);
+			RadarChart("#svg2", data, radarChartOptions);
+			RadarChart("#svg3", data, radarChartOptions);
+			RadarChart("#svg4", data, radarChartOptions);
+			RadarChart("#svg5", data, radarChartOptions);
+			RadarChart("#svg6", data, radarChartOptions);
 		</script>
+
 	</body>
 </html> 
