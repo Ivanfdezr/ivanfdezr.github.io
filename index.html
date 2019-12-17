@@ -9,7 +9,8 @@
 		<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
 
 		<!-- D3.js -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script> -->
+		<script src="https://d3js.org/d3.v4.js"></script>
 		
 		<style>
 			body {
@@ -36,8 +37,9 @@
 	<body>
 
 		<div class="radarChart12"></div>
-		<svg width="500" height="350" id="svg1"></svg>
-		<svg width="500" height="350" id="svg2"></svg>
+		<svg width="400" height="350" id="svg0"></svg>
+		<svg width="350" height="350" id="svg1"></svg>
+		<svg width="350" height="350" id="svg2"></svg>
 
 		<div class="radarChart34"></div>
 		<svg width="350" height="350" id="svg3"></svg>
@@ -49,7 +51,88 @@
 
 		<script src="RadarChart_repository/radarChart.js"></script>	
 		<script>
-      
+				
+			// set the dimensions and margins of the graph
+			var margin = {top: 60, right: 30, bottom: 30, left: 60},
+				width = 400 - margin.left - margin.right,
+				height = 350 - margin.top - margin.bottom;
+
+			// append the svg object to the body of the page
+			var svg = d3.select("#svg0")
+				.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			//Read the data
+			d3.csv("DESGLOSE.csv", function(data) {
+
+			// Add X axis
+			var x = d3.scaleLinear()
+				.domain([0, 50])
+				.range([ 0, width*1.5 ]);
+			svg.append("g")
+				.attr("transform", "translate(0," + height + ")")
+				.call(d3.axisBottom(x));
+
+			// Add Y axis
+			var y = d3.scaleLinear()
+				.domain([0, 100])
+				.range([ height, 0]);
+			svg.append("g")
+				.call(d3.axisLeft(y));
+
+			
+			var color = d3.scaleOrdinal()
+				.range(["#EDC951","#CC333F","#00A0B0","#F0A000"]);
+
+
+
+			// Add a tooltip div. Here I define the general feature of the tooltip: stuff that do not depend on the data point.
+			// Its opacity is set to 0: we don't see it by default.
+			
+
+			// A function that change this tooltip when the user hover a point.
+			// Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
+			
+
+
+			// Add dots
+			svg.append('g')
+				.selectAll("dot")
+				.data(data)
+				.enter()
+				.append("circle")
+					.attr("cx", function (d) { return x(d.Antigüedad); } )
+					.attr("cy", function (d) { return y(d.Completo); } )
+					.attr("r", 6)
+					.style("fill", function(d) { return color(d.ActivoIndex); } )
+					.style("opacity", 0.3)
+				//.style("fill", "#69b3a2")
+				.on("mouseover", function(d,i) {
+					newX =  parseFloat(d3.select(this).attr('cx')) - 10;
+					newY =  parseFloat(d3.select(this).attr('cy')) - 10;
+							
+					tooltip
+						.attr('x', newX)
+						.attr('y', newY)
+						.text(d.Completo)
+						.transition().duration(200)
+						.style('opacity', 1);
+				})
+				.on("mouseout", function(){
+					tooltip.transition().duration(200)
+						.style("opacity", 0);
+				});
+
+			var tooltip = svg.append("text")
+				.attr("class", "tooltip")
+				.style("opacity", 0);
+
+			})
+
+
 			/* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
 			////////////////////////////////////////////////////////////// 
 			//////////////////////// Set-Up ////////////////////////////// 
@@ -64,8 +147,8 @@
 			////////////////////////////////////////////////////////////// 
 
 			var data = [
-					  [//iPhone
-						{axis:"Battery Life",value:0.22},
+							[//iPhone
+						{axis:"Battery Life",value:0.25},
 						{axis:"Brand",value:0.28},
 						{axis:"Contract Cost",value:0.29},
 						{axis:"Design And Quality",value:0.17},
@@ -73,7 +156,7 @@
 						{axis:"Large Screen",value:0.02},
 						{axis:"Price Of Device",value:0.21},
 						{axis:"To Be A Smartphone",value:0.50}			
-					  ],[//Samsung
+							],[//Samsung
 						{axis:"Battery Life",value:0.27},
 						{axis:"Brand",value:0.16},
 						{axis:"Contract Cost",value:0.35},
@@ -82,7 +165,7 @@
 						{axis:"Large Screen",value:0.13},
 						{axis:"Price Of Device",value:0.35},
 						{axis:"To Be A Smartphone",value:0.38}
-					  ],[//Nokia Smartphone
+							],[//Nokia Smartphone
 						{axis:"Battery Life",value:0.26},
 						{axis:"Brand",value:0.10},
 						{axis:"Contract Cost",value:0.30},
@@ -91,7 +174,7 @@
 						{axis:"Large Screen",value:0.04},
 						{axis:"Price Of Device",value:0.41},
 						{axis:"To Be A Smartphone",value:0.30}
-					  ],[//Nokia Smartphone
+							],[//Nokia Smartphone
 						{axis:"Battery Life",value:0.5},
 						{axis:"Brand",value:0.15},
 						{axis:"Contract Cost",value:0.05},
@@ -100,23 +183,23 @@
 						{axis:"Large Screen",value:0.1},
 						{axis:"Price Of Device",value:0.09},
 						{axis:"To Be A Smartphone",value:0.35}
-					  ]
+							]
 					];
 			////////////////////////////////////////////////////////////// 
 			//////////////////// Draw the Chart ////////////////////////// 
 			////////////////////////////////////////////////////////////// 
 
-			var color = d3.scale.ordinal()
+			var color = d3.scaleOrdinal()
 				.range(["#EDC951","#CC333F","#00A0B0","#F0A000"]);
 				
 			var radarChartOptions = {
-			  w: width,
-			  h: height,
-			  margin: margin,
-			  maxValue: 0.5,
-			  levels: 5,
-			  roundStrokes: true,
-			  color: color
+					w: width,
+					h: height,
+					margin: margin,
+					maxValue: 0.5,
+					levels: 5,
+					roundStrokes: true,
+					color: color
 			};
 			//Call function to draw the Radar chart
 			RadarChart("#svg1", data, radarChartOptions);
