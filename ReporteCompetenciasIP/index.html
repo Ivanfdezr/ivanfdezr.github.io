@@ -29,7 +29,7 @@
 			}
 			
 			.tooltip {
-				fill: #111111;
+				fill: #000000;
 				font-weight: 800;
 			}
 		</style>
@@ -38,31 +38,31 @@
 	<body>
 
 		<div class="radarChart12"></div>
-		<svg width="500" height="450" id="svg0"></svg>
-		<svg width="350" height="400" id="svg1"></svg>
-		<svg width="350" height="400" id="svg2"></svg>
+		<svg width="550" height="470" id="svg0"></svg>
+		<svg width="350" height="420" id="svg1"></svg>
+		<svg width="350" height="420" id="svg2"></svg>
 
 		<div class="radarChart34"></div>
-		<svg width="350" height="350" id="svg3"></svg>
-		<svg width="350" height="350" id="svg4"></svg>
+		<svg width="350" height="400" id="svg3"></svg>
+		<svg width="350" height="400" id="svg4"></svg>
 
 		<!-- <div class="radarChart56"></div> -->
-		<svg width="350" height="350" id="svg5"></svg>
-		<svg width="350" height="350" id="svg6"></svg>
+		<svg width="350" height="400" id="svg5"></svg>
+		<svg width="350" height="400" id="svg6"></svg>
 
 		<script src="radarChart.js"></script>	
 		<script>
 				
 			// set the dimensions and margins of the graph
-			var margin = {top: 20, right: 150, bottom: 50, left: 50},
-				width  = 500 - margin.left - margin.right,
-				height = 450 - margin.top - margin.bottom;
+			var margin = {top: 40, right: 170, bottom: 50, left: 50},
+				width  = 550 - margin.left - margin.right,
+				height = 470 - margin.top - margin.bottom;
 
-			var margin1 = {top: 80, right: 50, bottom: 70, left: 50},
+			var margin1 = {top: 100, right: 50, bottom: 70, left: 50},
 				width1 = Math.min(300, window.innerWidth - 10) - margin1.left - margin1.right,
 				height1 = Math.min(width1, window.innerHeight - margin1.top - margin1.bottom - 20);
 
-			var margin2 = {top: 100, right: 50, bottom: 50, left: 50},
+			var margin2 = {top: 100, right: 50, bottom: 70, left: 50},
 				width2 = Math.min(300, window.innerWidth - 10) - margin2.left - margin2.right,
 				height2 = Math.min(width2, window.innerHeight - margin2.top - margin2.bottom - 20);
 
@@ -147,7 +147,7 @@
 				svg5.append("text").attr("x", 100).attr("y", 40).text("Terminación").style("font-size", "20px")
 				svg6.append("text").attr("x", 100).attr("y", 40).text("Reparación").style("font-size", "20px")
 
-				svg.append("text").attr("x", 100).attr("y", 30).text("Grado de competencia de los IP").style("font-size", "24px")
+				svg.append("text").attr("x", 80).attr("y", 15).text("Grado de competencia de los IP").style("font-size", "26px")
 				svg.append("circle").attr("cx",280).attr("cy",260).attr("r", 6).style("fill", colors[0])
 				svg.append("circle").attr("cx",280).attr("cy",280).attr("r", 6).style("fill", colors[1])
 				svg.append("circle").attr("cx",280).attr("cy",300).attr("r", 6).style("fill", colors[2])
@@ -160,7 +160,7 @@
 				// Add X axis label:
 				svg.append("text")
 				    .attr("text-anchor", "end")
-				    .attr("x", width/2+margin.left+50)
+				    .attr("x", width/2+margin.left+80)
 				    .attr("y", height+40)
 				    .style("font-size", "15px")
 				    .text("Antigüedad (años)");
@@ -169,7 +169,7 @@
 				svg.append("text")
 				    .attr("text-anchor", "end")
 				    .attr("transform", "rotate(-90)")
-				    .attr("y", -margin.left+20)
+				    .attr("y", -margin.left+15)
 				    .attr("x", -margin.top-20)
 				    .style("font-size", "15px")
 				    .text("Porcentaje promedio de competencias")
@@ -195,30 +195,43 @@
 				};
 
 				// Highlight the specie that is hovered
-				var highlight = function(d){
+				var mouseoverFunction = function(d,i){
 
-					selected_activo = d.ActivoIndex
+					newX = parseFloat(d3.select(this).attr('cx')) - 10;
+					newY = parseFloat(d3.select(this).attr('cy')) - 10;
+							
+					tooltip.transition().duration(20)
+						.text(d.Nombre)
+						.attr('x', newX)
+						.attr('y', newY)
+						.style('opacity', 1);
 
 					d3.selectAll(".dot")
-					.transition()
-					.duration(200)
-					.style("opacity", 0.2)
-					.attr("r", 4)
+						.transition()
+						.duration(1000)
+						.style("opacity", 0.1)
+						.attr("r", 4);
 
-					d3.selectAll("." + selected_activo)
-					.transition()
-					.duration(200)
-					.style("opacity", 0.4)
-					.attr("r", 8)
+					d3.selectAll("." + d.Activo)
+						.transition()
+						.duration(2000)
+						.style("opacity", 0.5)
+						.attr("r", 8);
+
+					console.log(data[0][i].Nombre);
 				}
 
 				// Highlight the specie that is hovered
-				var doNotHighlight = function(){
+				var mouseoutFunction = function(){
+					
+					tooltip.transition().duration(200)
+						.style("opacity", 0);
+
 					d3.selectAll(".dot")
-					.transition()
-					.duration(200)
-					.style("opacity", 0.3)
-					.attr("r", 6 )
+						.transition()
+						.duration(20000)
+						.style("opacity", 0.3)
+						.attr("r", 6 );
 				}
 
 				// Add dots
@@ -227,32 +240,15 @@
 						.data(data[0])
 						.enter()
 						.append("circle")
+							.attr("class", function (d) { return "dot " + d.Activo } )
 							.attr("cx", function (d) { return x(d["Antiguedad"]); } )
 							.attr("cy", function (d) { return y(d.Completo); } )
 							.attr("r", 6)
 							.style("fill", function(d,i) { return color0(d.ActivoIndex); } )
 							.style("opacity", 0.3)
 						//.style("fill", "#69b3a2")
-						.on("mouseover", function(d,i) {
-							newX = parseFloat(d3.select(this).attr('cx')) - 10;
-							newY = parseFloat(d3.select(this).attr('cy')) - 10;
-									
-							tooltip.transition().duration(20)
-								.text(d.Nombre)
-								.attr('x', newX)
-								.attr('y', newY)
-								.style('opacity', 1);
-
-							highlight(d);
-
-							console.log(data[0][i].Nombre);
-						})
-						.on("mouseout", function(d){
-							tooltip.transition().duration(200)
-								.style("opacity", 0);
-
-							doNotHighlight(d);
-						})
+						.on("mouseover", mouseoverFunction)
+						.on("mouseout", mouseoutFunction)
 						.on("click", function(d,i){
 							newX = parseFloat(d3.select(this).attr('cx')) - 10;
 							newY = parseFloat(d3.select(this).attr('cy')) - 10;
@@ -265,14 +261,14 @@
 
 							clickTooltip2.transition().duration(200)
 								.text(d.Ficha+' ('+d.Antiguedad+' años)')
-								.attr('x', newX)
-								.attr('y', newY+12)
+								.attr('x', newX+20)
+								.attr('y', newY+13)
 								.style('opacity', 1);
 
 							clickTooltip3.transition().duration(200)
-								.text(d.Activo+' - DM'+d.DMIndex)
-								.attr('x', newX)
-								.attr('y', newY+24)
+								.text(d.Activo+' | DM'+d.DMIndex)
+								.attr('x', newX+20)
+								.attr('y', newY+26)
 								.style('opacity', 1);
 
 							console.log(ix+'->'+i);
@@ -336,11 +332,11 @@
 
 							var data3 = [
 											[//Datos del IP
-												{axis:'Predict',value:data[0][ix]['Predict']/100},
-												{axis:'DSP-One',value:data[0][ix]['Dsp One']/100},
-												{axis:'StressCheck',value:data[0][ix]['Stress Check']/100},
-												{axis:'Compass',value:data[0][ix]['Compass']/100},
-												{axis:'WellCat',value:data[0][ix]['Wellcat']/100}
+												{axis:'Predict™',value:data[0][ix]['Predict']/100},
+												{axis:'DSP-One™',value:data[0][ix]['Dsp One']/100},
+												{axis:'StressCheck™',value:data[0][ix]['Stress Check']/100},
+												{axis:'Compass™',value:data[0][ix]['Compass']/100},
+												{axis:'WELLCAT™',value:data[0][ix]['Wellcat']/100}
 											]
 										];
 							
