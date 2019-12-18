@@ -37,7 +37,7 @@
 	<body>
 
 		<div class="radarChart12"></div>
-		<svg width="400" height="350" id="svg0"></svg>
+		<svg width="600" height="450" id="svg0"></svg>
 		<svg width="350" height="350" id="svg1"></svg>
 		<!-- <svg width="350" height="350" id="svg2"></svg> -->
 
@@ -53,11 +53,11 @@
 		<script>
 				
 			// set the dimensions and margins of the graph
-			var margin = {top: 60, right: 30, bottom: 30, left: 60},
-				width = 400 - margin.left - margin.right,
-				height = 350 - margin.top - margin.bottom;
+			var margin = {top: 20, right: 50, bottom: 50, left: 50},
+				width  = 600 - margin.left - margin.right,
+				height = 450 - margin.top - margin.bottom;
 
-			var margin1 = {top: 50, right: 50, bottom: 50, left: 50},
+			var margin1 = {top: 100, right: 50, bottom: 50, left: 50},
 				width1 = Math.min(300, window.innerWidth - 10) - margin1.left - margin1.right,
 				height1 = Math.min(width1, window.innerHeight - margin1.top - margin1.bottom - 20);
 
@@ -116,6 +116,32 @@
 					.attr("class", "tooltip")
 					.style("opacity", 0)
 					.attr("idx", 0);
+
+				svg.append("circle").attr("cx",400).attr("cy",250).attr("r", 6).style("fill", colors[0])
+				svg.append("circle").attr("cx",400).attr("cy",275).attr("r", 6).style("fill", colors[1])
+				svg.append("circle").attr("cx",400).attr("cy",300).attr("r", 6).style("fill", colors[2])
+				svg.append("circle").attr("cx",400).attr("cy",325).attr("r", 6).style("fill", colors[3])
+				svg.append("text").attr("x", 420).attr("y", 250).text("variable A").style("font-size", "15px").attr("alignment-baseline","middle")
+				svg.append("text").attr("x", 420).attr("y", 275).text("variable B").style("font-size", "15px").attr("alignment-baseline","middle")
+				svg.append("text").attr("x", 420).attr("y", 300).text("variable C").style("font-size", "15px").attr("alignment-baseline","middle")
+				svg.append("text").attr("x", 420).attr("y", 325).text("variable D").style("font-size", "15px").attr("alignment-baseline","middle")
+
+				// Add X axis label:
+				svg.append("text")
+				    .attr("text-anchor", "end")
+				    .attr("x", width/2+margin.left)
+				    .attr("y", height+40)
+				    .style("font-size", "15px")
+				    .text("Antiguedad (años)");
+
+				// Y axis label:
+				svg.append("text")
+				    .attr("text-anchor", "end")
+				    .attr("transform", "rotate(-90)")
+				    .attr("y", -margin.left+20)
+				    .attr("x", -margin.top-20)
+				    .style("font-size", "15px")
+				    .text("Porcentaje promedio de competencias")
 
 				var radarChartOptions = {
 					w: width1,
@@ -178,12 +204,14 @@
 
 							var data1 = [
 											[//Datos promedio del activo
+												{axis:'Curso IP',value:data[1][data[0][ix].ActivoIndex].Curso/100},
 												{axis:'Ingles',value:data[1][data[0][ix].ActivoIndex].Ingles/100},
 												{axis:'Software',value:data[1][data[0][ix].ActivoIndex].Software/100},
 												{axis:'Perforacion',value:data[1][data[0][ix].ActivoIndex].Perforacion/100},
 												{axis:'Terminacion',value:data[1][data[0][ix].ActivoIndex].Terminacion/100},
 												{axis:'Reparacion',value:data[1][data[0][ix].ActivoIndex].Reparacion/100}
 											],[//Datos del IP
+												{axis:'Curso IP',value:data[1][data[0][ix].ActivoIndex].Curso/100},
 												{axis:'Ingles',value:data[0][ix].Ingles/100},
 												{axis:'Software',value:data[0][ix].Software/100},
 												{axis:'Perforacion',value:data[0][ix].Perforacion/100},
