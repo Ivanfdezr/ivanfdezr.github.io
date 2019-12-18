@@ -39,7 +39,7 @@
 		<div class="radarChart12"></div>
 		<svg width="400" height="350" id="svg0"></svg>
 		<svg width="350" height="350" id="svg1"></svg>
-		<svg width="350" height="350" id="svg2"></svg>
+		<!-- <svg width="350" height="350" id="svg2"></svg> -->
 
 		<div class="radarChart34"></div>
 		<svg width="350" height="350" id="svg3"></svg>
@@ -215,6 +215,34 @@
 							radarChartOptions.color = color3
 							RadarChart("#svg3", data3, radarChartOptions);
 
+
+							var data4 = [
+											[//Datos del IP
+												{axis:'Cementacion',value:data[0][ix]['Cementacion']/100},
+												{axis:'Registros',value:data[0][ix]['Registros']/100},
+												{axis:'Geomecanica',value:data[0][ix]['Geomecanica']/100},
+												{axis:'Diseno de TRs',value:data[0][ix]['Diseno de TRs']/100},
+												{axis:'Fluidos',value:data[0][ix]['Fluidos']/100},
+												{axis:'Bajo Balance',value:data[0][ix]['Bajo Balance']/100},
+												{axis:'Equipo de perforacion',value:data[0][ix]['Equipo de perforacion']/100},
+												{axis:'Hidraulica',value:data[0][ix]['Hidraulica']/100},
+												{axis:'Direccional',value:data[0][ix]['Direccional']/100},
+												{axis:'Barrenas',value:data[0][ix]['Barrenas']/100},
+												{axis:'Sidetrack',value:data[0][ix]['Sidetrack']/100},
+												{axis:'Apertura de ventana',value:data[0][ix]['Apertura de ventana']/100},
+												{axis:'Prueba de goteo',value:data[0][ix]['Prueba de goteo']/100},
+												{axis:'Prueba de densidad equivalente',value:data[0][ix]['Prueba de densidad equivalente']/100},
+												{axis:'Control de pozo',value:data[0][ix]['Control de pozo']/100},
+												{axis:'Terminacion',value:data[0][ix]['Terminacion']/100},
+												{axis:'Reparacion mayor',value:data[0][ix]['Reparacion mayor']/100}
+											]
+										];
+							
+							var color4 = d3.scaleOrdinal()
+								.range([colors[0]]);
+							radarChartOptions.color = color4
+							RadarChart("#svg4", data4, radarChartOptions);
+
 							/*
 							var data1 = [
 											[//Datos promedio del activo
@@ -288,3 +316,35 @@
 
 	</body>
 </html> 
+
+
+
+Cementacion
+Registros
+Geomecanica
+Diseno de Trs
+Fluidos
+Bajo Balance
+Equipo de perforacion
+Hidraulica
+Direccional
+Barrenas
+Sidetrack
+Apertura de ventana
+Prueba de goteo
+Prueba de densidad equivalente
+Control de pozo
+Terminacion
+Reparacion mayor
+Seguridad
+Disparos
+Estimulacion
+Sin equipo
+Operacion con TF
+Control de arena
+Molienda
+Pesca
+Tapon de sal
+Taponamiento de pozo
+Prueba de admision
+Fracturamiento
