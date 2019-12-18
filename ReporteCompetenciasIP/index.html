@@ -84,8 +84,9 @@
 				d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/PROMEDIOSporActivo.csv"),
 				d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/PROMEDIOSporDM.csv")
 			]).then(function(data) {
-				console.log(data[0][0]);  // first row of cities
-				console.log(data[1][0]);  // first row of animals
+				console.log(data[0][0]);  // first row of DESGLOSE
+				console.log(data[1][0]);  // first row of PROMEDIOSporActivo
+				console.log(data[2][0]);  // first row of PROMEDIOSporDM
 		
 				// Add X axis
 				var x = d3.scaleLinear()
@@ -162,7 +163,7 @@
 				    .attr("x", width/2+margin.left+50)
 				    .attr("y", height+40)
 				    .style("font-size", "15px")
-				    .text("Antiguedad (años)");
+				    .text("Antigüedad (años)");
 
 				// Y axis label:
 				svg.append("text")
@@ -193,6 +194,33 @@
 					color: null
 				};
 
+				// Highlight the specie that is hovered
+				var highlight = function(d){
+
+					selected_activo = d.ActivoIndex
+
+					d3.selectAll(".dot")
+					.transition()
+					.duration(200)
+					.style("opacity", 0.2)
+					.attr("r", 4)
+
+					d3.selectAll("." + selected_activo)
+					.transition()
+					.duration(200)
+					.style("opacity", 0.4)
+					.attr("r", 8)
+				}
+
+				// Highlight the specie that is hovered
+				var doNotHighlight = function(){
+					d3.selectAll(".dot")
+					.transition()
+					.duration(200)
+					.style("opacity", 0.3)
+					.attr("r", 6 )
+				}
+
 				// Add dots
 				svg.append('g')
 					.selectAll("dot")
@@ -215,12 +243,15 @@
 								.attr('y', newY)
 								.style('opacity', 1);
 
-							console.log(data[0][ix].Nombre);
-							console.log(ix);
+							highlight(d);
+
+							console.log(data[0][i].Nombre);
 						})
-						.on("mouseout", function(){
+						.on("mouseout", function(d){
 							tooltip.transition().duration(200)
 								.style("opacity", 0);
+
+							doNotHighlight(d);
 						})
 						.on("click", function(d,i){
 							newX = parseFloat(d3.select(this).attr('cx')) - 10;
@@ -244,10 +275,8 @@
 								.attr('y', newY+24)
 								.style('opacity', 1);
 
-							console.log(ix);
+							console.log(ix+'->'+i);
 							ix = i;
-							console.log(ix);
-
 							console.log(data[0][ix]);
 
 							var data1 = [
@@ -308,10 +337,10 @@
 							var data3 = [
 											[//Datos del IP
 												{axis:'Predict',value:data[0][ix]['Predict']/100},
-												{axis:'Dsp One',value:data[0][ix]['Dsp One']/100},
-												{axis:'Stress Check',value:data[0][ix]['Stress Check']/100},
+												{axis:'DSP-One',value:data[0][ix]['Dsp One']/100},
+												{axis:'StressCheck',value:data[0][ix]['Stress Check']/100},
 												{axis:'Compass',value:data[0][ix]['Compass']/100},
-												{axis:'Wellcat',value:data[0][ix]['Wellcat']/100}
+												{axis:'WellCat',value:data[0][ix]['Wellcat']/100}
 											]
 										];
 							
