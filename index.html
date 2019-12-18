@@ -45,7 +45,7 @@
 		<svg width="350" height="350" id="svg3"></svg>
 		<svg width="350" height="350" id="svg4"></svg>
 
-		<div class="radarChart56"></div>
+		<!-- <div class="radarChart56"></div> -->
 		<svg width="350" height="350" id="svg5"></svg>
 		<svg width="350" height="350" id="svg6"></svg>
 
@@ -239,72 +239,43 @@
 										];
 							
 							var color4 = d3.scaleOrdinal()
-								.range([colors[0]]);
+								.range([colors[1]]);
 							radarChartOptions.color = color4
 							RadarChart("#svg4", data4, radarChartOptions);
 
-							/*
-							var data1 = [
-											[//Datos promedio del activo
-												{axis:'Ingles',value:data[1][data[0][ix].ActivoIndex].Ingles/100},
-												{axis:'Software',value:data[1][data[0][ix].ActivoIndex].Software/100},
-												{axis:'Perforacion',value:data[1][data[0][ix].ActivoIndex].Perforacion/100},
-												{axis:'Terminacion',value:data[1][data[0][ix].ActivoIndex].Terminacion/100},
-												{axis:'Reparacion',value:data[1][data[0][ix].ActivoIndex].Reparacion/100}
-											],[//Datos del IP
-												{axis:'Ingles',value:data[0][ix].Ingles/100},
-												{axis:'Software',value:data[0][ix].Software/100},
-												{axis:'Perforacion',value:data[0][ix].Perforacion/100},
-												{axis:'Terminacion',value:data[0][ix].Terminacion/100},
-												{axis:'Reparacion',value:data[0][ix].Reparacion/100}			
+
+							var data5 = [
+											[//Datos del IP
+												{axis:'Seguridad',value:data[0][ix]['Seguridad']/100},
+												{axis:'Disparos',value:data[0][ix]['Disparos']/100},
+												{axis:'Estimulacion',value:data[0][ix]['Estimulacion']/100},
+												{axis:'Sin equipo',value:data[0][ix]['Sin equipo']/100}
 											]
 										];
 							
-							var color1 = d3.scaleOrdinal()
-								.range([colors[data[0][ix].ActivoIndex],colors[4]]);
+							var color5 = d3.scaleOrdinal()
+								.range([colors[2]]);
+							radarChartOptions.color = color5
+							RadarChart("#svg5", data5, radarChartOptions);
 
 
-
-							var data1 = [
-											[//Datos promedio del activo
-												{axis:'Ingles',value:data[1][data[0][ix].ActivoIndex].Ingles/100},
-												{axis:'Software',value:data[1][data[0][ix].ActivoIndex].Software/100},
-												{axis:'Perforacion',value:data[1][data[0][ix].ActivoIndex].Perforacion/100},
-												{axis:'Terminacion',value:data[1][data[0][ix].ActivoIndex].Terminacion/100},
-												{axis:'Reparacion',value:data[1][data[0][ix].ActivoIndex].Reparacion/100}
-											],[//Datos del IP
-												{axis:'Ingles',value:data[0][ix].Ingles/100},
-												{axis:'Software',value:data[0][ix].Software/100},
-												{axis:'Perforacion',value:data[0][ix].Perforacion/100},
-												{axis:'Terminacion',value:data[0][ix].Terminacion/100},
-												{axis:'Reparacion',value:data[0][ix].Reparacion/100}			
+							var data6 = [
+											[//Datos del IP
+												{axis:'Operacion con TF',value:data[0][ix]['Operacion con TF']/100},
+												{axis:'Control de arena',value:data[0][ix]['Control de arena']/100},
+												{axis:'Molienda',value:data[0][ix]['Molienda']/100},
+												{axis:'Pesca',value:data[0][ix]['Pesca']/100},
+												{axis:'Tapon de sal',value:data[0][ix]['Tapon de sal']/100},
+												{axis:'Taponamiento de pozo',value:data[0][ix]['Taponamiento de pozo']/100},
+												{axis:'Prueba de admision',value:data[0][ix]['Prueba de admision']/100},
+												{axis:'Fracturamiento',value:data[0][ix]['Fracturamiento']/100}
 											]
 										];
 							
-							var color1 = d3.scaleOrdinal()
-								.range([colors[data[0][ix].ActivoIndex],colors[4]]);
-
-
-							var data1 = [
-											[//Datos promedio del activo
-												{axis:'Ingles',value:data[1][data[0][ix].ActivoIndex].Ingles/100},
-												{axis:'Software',value:data[1][data[0][ix].ActivoIndex].Software/100},
-												{axis:'Perforacion',value:data[1][data[0][ix].ActivoIndex].Perforacion/100},
-												{axis:'Terminacion',value:data[1][data[0][ix].ActivoIndex].Terminacion/100},
-												{axis:'Reparacion',value:data[1][data[0][ix].ActivoIndex].Reparacion/100}
-											],[//Datos del IP
-												{axis:'Ingles',value:data[0][ix].Ingles/100},
-												{axis:'Software',value:data[0][ix].Software/100},
-												{axis:'Perforacion',value:data[0][ix].Perforacion/100},
-												{axis:'Terminacion',value:data[0][ix].Terminacion/100},
-												{axis:'Reparacion',value:data[0][ix].Reparacion/100}			
-											]
-										];
-							
-							var color1 = d3.scaleOrdinal()
-								.range([colors[data[0][ix].ActivoIndex],colors[4]]);
-							*/
-
+							var color6 = d3.scaleOrdinal()
+								.range([colors[3]]);
+							radarChartOptions.color = color6
+							RadarChart("#svg6", data6, radarChartOptions);
 							
 
 				})
@@ -315,36 +286,4 @@
 		</script>
 
 	</body>
-</html> 
-
-
-
-Cementacion
-Registros
-Geomecanica
-Diseno de Trs
-Fluidos
-Bajo Balance
-Equipo de perforacion
-Hidraulica
-Direccional
-Barrenas
-Sidetrack
-Apertura de ventana
-Prueba de goteo
-Prueba de densidad equivalente
-Control de pozo
-Terminacion
-Reparacion mayor
-Seguridad
-Disparos
-Estimulacion
-Sin equipo
-Operacion con TF
-Control de arena
-Molienda
-Pesca
-Tapon de sal
-Taponamiento de pozo
-Prueba de admision
-Fracturamiento
+</html>
