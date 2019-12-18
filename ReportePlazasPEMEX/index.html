@@ -10,7 +10,7 @@
 
 		<!-- D3.js -->
 		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script> -->
-		<script src="https://d3js.org/d3.v4.js"></script>
+		<script src="https://d3js.org/d3.v5.js"></script>
 		
 		<style>
 			body {
@@ -29,7 +29,8 @@
 			}
 			
 			.tooltip {
-				fill: #333333;
+				fill: #111111;
+				font-weight: 800;
 			}
 		</style>
 	
@@ -37,9 +38,9 @@
 	<body>
 
 		<div class="radarChart12"></div>
-		<svg width="400" height="350" id="svg0"></svg>
-		<svg width="350" height="350" id="svg1"></svg>
-		<svg width="350" height="350" id="svg2"></svg>
+		<svg width="500" height="450" id="svg0"></svg>
+		<svg width="350" height="400" id="svg1"></svg>
+		<svg width="350" height="400" id="svg2"></svg>
 
 		<div class="radarChart34"></div>
 		<svg width="350" height="350" id="svg3"></svg>
@@ -49,13 +50,21 @@
 		<svg width="350" height="350" id="svg5"></svg>
 		<svg width="350" height="350" id="svg6"></svg>
 
-		<script src="RadarChart_repository/radarChart.js"></script>	
+		<script src="radarChart.js"></script>	
 		<script>
 				
 			// set the dimensions and margins of the graph
-			var margin = {top: 60, right: 30, bottom: 30, left: 60},
-				width = 400 - margin.left - margin.right,
-				height = 350 - margin.top - margin.bottom;
+			var margin = {top: 20, right: 150, bottom: 50, left: 50},
+				width  = 500 - margin.left - margin.right,
+				height = 450 - margin.top - margin.bottom;
+
+			var margin1 = {top: 80, right: 50, bottom: 70, left: 50},
+				width1 = Math.min(300, window.innerWidth - 10) - margin1.left - margin1.right,
+				height1 = Math.min(width1, window.innerHeight - margin1.top - margin1.bottom - 20);
+
+			var margin2 = {top: 100, right: 50, bottom: 50, left: 50},
+				width2 = Math.min(300, window.innerWidth - 10) - margin2.left - margin2.right,
+				height2 = Math.min(width2, window.innerHeight - margin2.top - margin2.bottom - 20);
 
 			// append the svg object to the body of the page
 			var svg = d3.select("#svg0")
@@ -63,15 +72,24 @@
 				.attr("width", width + margin.left + margin.right)
 				.attr("height", height + margin.top + margin.bottom)
 				.append("g")
-				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+			
+			//var data = d3.csvParse(await FileAttachment("DESGLOSE.csv").text(), d3.autoType);
 
 			//Read the data
-			d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/DESGLOSE.csv", function(data)
-			{
-
+			//https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/DESGLOSE.csv
+			Promise.all([
+				d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/DESGLOSE.csv"), 
+				d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/PROMEDIOSporActivo.csv"),
+				d3.csv("https://raw.githubusercontent.com/Ivanfdezr/ivanfdezr.github.io/master/PROMEDIOSporDM.csv")
+			]).then(function(data) {
+				console.log(data[0][0]);  // first row of cities
+				console.log(data[1][0]);  // first row of animals
+		
 				// Add X axis
 				var x = d3.scaleLinear()
-					.domain([6, 50])
+					.domain([6, 44])
 					.range([ 0, width*1.5 ]);
 				svg.append("g")
 					.attr("transform", "translate(0," + height + ")")
@@ -84,121 +102,293 @@
 				svg.append("g")
 					.call(d3.axisLeft(y));
 
-				var color = d3.scaleOrdinal()
+				var colors = ["#EDC951","#CC333F","#00A0B0","#10B020","#9966EE","#2299DD","#555555"];
+
+				var color0 = d3.scaleOrdinal()
 					.range(["#EDC951","#CC333F","#00A0B0","#10B020"]);
-
-				// Add dots
-				svg.append('g')
-					.selectAll("dot")
-					.data(data)
-					.enter()
-					.append("circle")
-						.attr("cx", function (d) { return x(d["Años de Experiencia en campo"]); } )
-						.attr("cy", function (d) { return y(d.Completo); } )
-						.attr("r", 6)
-						.style("fill", function(d,i) { return color(d.ActivoIndex); } )
-						.style("opacity", 0.3)
-					//.style("fill", "#69b3a2")
-					.on("mouseover", function(d,i) {
-						newX =  parseFloat(d3.select(this).attr('cx')) - 10;
-						newY =  parseFloat(d3.select(this).attr('cy')) - 10;
-
-								
-						tooltip
-							.attr('x', newX)
-							.attr('y', newY)
-							.text(d.Activo)
-							.transition().duration(200)
-							.style('opacity', 1);
-					})
-					.on("mouseout", function(){
-						tooltip.transition().duration(200)
-							.style("opacity", 0);
-					});
 
 				var tooltip = svg.append("text")
 					.attr("class", "tooltip")
 					.style("opacity", 0);
 
-			})
+				var clickTooltip1 = svg.append("text")
+					.attr("class", "tooltip")
+					.style("opacity", 0)
+					.attr("idx", 0);
 
+				var clickTooltip2 = svg.append("text")
+					.attr("class", "tooltip")
+					.style("opacity", 0)
+					.attr("idx", 0);
 
-			/* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
-			////////////////////////////////////////////////////////////// 
-			//////////////////////// Set-Up ////////////////////////////// 
-			////////////////////////////////////////////////////////////// 
+				var clickTooltip3 = svg.append("text")
+					.attr("class", "tooltip")
+					.style("opacity", 0)
+					.attr("idx", 0);
 
-			var margin = {top: 50, right: 50, bottom: 50, left: 50},
-				width = Math.min(300, window.innerWidth - 10) - margin.left - margin.right,
-				height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
-					
-			////////////////////////////////////////////////////////////// 
-			////////////////////////// Data ////////////////////////////// 
-			////////////////////////////////////////////////////////////// 
+				// append the svg object to the body of the page
+				var svg1 = d3.select("#svg1")
+				var svg2 = d3.select("#svg2")
+				var svg3 = d3.select("#svg3")
+				var svg4 = d3.select("#svg4")
+				var svg5 = d3.select("#svg5")
+				var svg6 = d3.select("#svg6")
+				svg1.append("circle").attr("cx",80).attr("cy",350).attr("r", 6).style("fill", colors[6])
+				svg2.append("circle").attr("cx",40).attr("cy",340).attr("r", 6).style("fill", colors[4])
+				svg2.append("circle").attr("cx",40).attr("cy",360).attr("r", 6).style("fill", colors[5])
+				svg1.append("text").attr("x", 100).attr("y", 355).text("Competencias del IP").style("font-size", "15px")
+				svg2.append("text").attr("x", 60).attr("y", 345).text("Competencias medias en DM1").style("font-size", "15px")
+				svg2.append("text").attr("x", 60).attr("y", 365).text("Competencias medias en DM2").style("font-size", "15px")
+				svg1.append("text").attr("x", 60).attr("y", 20).text("Comparación con Activo").style("font-size", "20px")
+				svg2.append("text").attr("x", 60).attr("y", 20).text("Comparación con DM").style("font-size", "20px")
+				svg3.append("text").attr("x", 100).attr("y", 40).text("Software").style("font-size", "20px")
+				svg4.append("text").attr("x", 100).attr("y", 40).text("Perforación").style("font-size", "20px")
+				svg5.append("text").attr("x", 100).attr("y", 40).text("Terminación").style("font-size", "20px")
+				svg6.append("text").attr("x", 100).attr("y", 40).text("Reparación").style("font-size", "20px")
 
-			var data = [
-							[//iPhone
-						{axis:"Battery Life",value:0.25},
-						{axis:"Brand",value:0.28},
-						{axis:"Contract Cost",value:0.29},
-						{axis:"Design And Quality",value:0.17},
-						{axis:"Have Internet Connectivity",value:0.22},
-						{axis:"Large Screen",value:0.02},
-						{axis:"Price Of Device",value:0.21},
-						{axis:"To Be A Smartphone",value:0.50}			
-							],[//Samsung
-						{axis:"Battery Life",value:0.27},
-						{axis:"Brand",value:0.16},
-						{axis:"Contract Cost",value:0.35},
-						{axis:"Design And Quality",value:0.13},
-						{axis:"Have Internet Connectivity",value:0.20},
-						{axis:"Large Screen",value:0.13},
-						{axis:"Price Of Device",value:0.35},
-						{axis:"To Be A Smartphone",value:0.38}
-							],[//Nokia Smartphone
-						{axis:"Battery Life",value:0.26},
-						{axis:"Brand",value:0.10},
-						{axis:"Contract Cost",value:0.30},
-						{axis:"Design And Quality",value:0.14},
-						{axis:"Have Internet Connectivity",value:0.22},
-						{axis:"Large Screen",value:0.04},
-						{axis:"Price Of Device",value:0.41},
-						{axis:"To Be A Smartphone",value:0.30}
-							],[//Nokia Smartphone
-						{axis:"Battery Life",value:0.5},
-						{axis:"Brand",value:0.15},
-						{axis:"Contract Cost",value:0.05},
-						{axis:"Design And Quality",value:0.19},
-						{axis:"Have Internet Connectivity",value:0.12},
-						{axis:"Large Screen",value:0.1},
-						{axis:"Price Of Device",value:0.09},
-						{axis:"To Be A Smartphone",value:0.35}
-							]
-					];
-			////////////////////////////////////////////////////////////// 
-			//////////////////// Draw the Chart ////////////////////////// 
-			////////////////////////////////////////////////////////////// 
+				svg.append("text").attr("x", 100).attr("y", 30).text("Grado de competencia de los IP").style("font-size", "24px")
+				svg.append("circle").attr("cx",280).attr("cy",260).attr("r", 6).style("fill", colors[0])
+				svg.append("circle").attr("cx",280).attr("cy",280).attr("r", 6).style("fill", colors[1])
+				svg.append("circle").attr("cx",280).attr("cy",300).attr("r", 6).style("fill", colors[2])
+				svg.append("circle").attr("cx",280).attr("cy",320).attr("r", 6).style("fill", colors[3])
+				svg.append("text").attr("x", 300).attr("y", 265).text("Bellota-Jujo").style("font-size", "15px")
+				svg.append("text").attr("x", 300).attr("y", 285).text("Samaria-Luna").style("font-size", "15px")
+				svg.append("text").attr("x", 300).attr("y", 305).text("Cinco-Presidentes").style("font-size", "15px")
+				svg.append("text").attr("x", 300).attr("y", 325).text("Macuspana").style("font-size", "15px")
 
-			var color = d3.scaleOrdinal()
-				.range(["#EDC951","#CC333F","#00A0B0","#F0A000"]);
-				
-			var radarChartOptions = {
-					w: width,
-					h: height,
-					margin: margin,
-					maxValue: 0.5,
+				// Add X axis label:
+				svg.append("text")
+				    .attr("text-anchor", "end")
+				    .attr("x", width/2+margin.left+50)
+				    .attr("y", height+40)
+				    .style("font-size", "15px")
+				    .text("Antiguedad (años)");
+
+				// Y axis label:
+				svg.append("text")
+				    .attr("text-anchor", "end")
+				    .attr("transform", "rotate(-90)")
+				    .attr("y", -margin.left+20)
+				    .attr("x", -margin.top-20)
+				    .style("font-size", "15px")
+				    .text("Porcentaje promedio de competencias")
+
+				var radarChartOptions1 = {
+					w: width1,
+					h: height1,
+					margin: margin1,
+					maxValue: 1,
 					levels: 5,
 					roundStrokes: true,
-					color: color
-			};
-			//Call function to draw the Radar chart
-			RadarChart("#svg1", data, radarChartOptions);
-			RadarChart("#svg2", data, radarChartOptions);
-			RadarChart("#svg3", data, radarChartOptions);
-			RadarChart("#svg4", data, radarChartOptions);
-			RadarChart("#svg5", data, radarChartOptions);
-			RadarChart("#svg6", data, radarChartOptions);
+					color: null
+				};
+
+				var radarChartOptions2 = {
+					w: width2,
+					h: height2,
+					margin: margin2,
+					maxValue: 1,
+					levels: 5,
+					roundStrokes: true,
+					color: null
+				};
+
+				// Add dots
+				svg.append('g')
+					.selectAll("dot")
+						.data(data[0])
+						.enter()
+						.append("circle")
+							.attr("cx", function (d) { return x(d["Antiguedad"]); } )
+							.attr("cy", function (d) { return y(d.Completo); } )
+							.attr("r", 6)
+							.style("fill", function(d,i) { return color0(d.ActivoIndex); } )
+							.style("opacity", 0.3)
+						//.style("fill", "#69b3a2")
+						.on("mouseover", function(d,i) {
+							newX = parseFloat(d3.select(this).attr('cx')) - 10;
+							newY = parseFloat(d3.select(this).attr('cy')) - 10;
+									
+							tooltip.transition().duration(20)
+								.text(d.Nombre)
+								.attr('x', newX)
+								.attr('y', newY)
+								.style('opacity', 1);
+
+							console.log(data[0][ix].Nombre);
+							console.log(ix);
+						})
+						.on("mouseout", function(){
+							tooltip.transition().duration(200)
+								.style("opacity", 0);
+						})
+						.on("click", function(d,i){
+							newX = parseFloat(d3.select(this).attr('cx')) - 10;
+							newY = parseFloat(d3.select(this).attr('cy')) - 10;
+									
+							clickTooltip1.transition().duration(200)
+								.text(d.Nombre)
+								.attr('x', newX)
+								.attr('y', newY)
+								.style('opacity', 1);
+
+							clickTooltip2.transition().duration(200)
+								.text(d.Ficha+' ('+d.Antiguedad+' años)')
+								.attr('x', newX)
+								.attr('y', newY+12)
+								.style('opacity', 1);
+
+							clickTooltip3.transition().duration(200)
+								.text(d.Activo+' - DM'+d.DMIndex)
+								.attr('x', newX)
+								.attr('y', newY+24)
+								.style('opacity', 1);
+
+							console.log(ix);
+							ix = i;
+							console.log(ix);
+
+							console.log(data[0][ix]);
+
+							var data1 = [
+											[//Datos promedio del activo
+												{axis:'Curso IP',value:data[1][data[0][ix].ActivoIndex].CursoIP/100},
+												{axis:'Ingles',value:data[1][data[0][ix].ActivoIndex].Ingles/100},
+												{axis:'Software',value:data[1][data[0][ix].ActivoIndex].Software/100},
+												{axis:'Perforacion',value:data[1][data[0][ix].ActivoIndex].Perforacion/100},
+												{axis:'Terminacion',value:data[1][data[0][ix].ActivoIndex].Terminacion/100},
+												{axis:'Reparacion',value:data[1][data[0][ix].ActivoIndex].Reparacion/100}
+											],[//Datos del IP
+												{axis:'Curso IP',value:data[0][ix].CursoIP/100},
+												{axis:'Ingles',value:data[0][ix].Ingles/100},
+												{axis:'Software',value:data[0][ix].Software/100},
+												{axis:'Perforacion',value:data[0][ix].Perforacion/100},
+												{axis:'Terminacion',value:data[0][ix].Terminacion/100},
+												{axis:'Reparacion',value:data[0][ix].Reparacion/100}			
+											]
+										];
+							
+							var color1 = d3.scaleOrdinal()
+								.range([colors[data[0][ix].ActivoIndex],colors[6]]);
+							radarChartOptions1.color = color1
+							RadarChart("#svg1", data1, radarChartOptions1);
+
+
+							var data2 = [
+											[//Datos promedio de DM1
+												{axis:'Curso IP',value:data[2][0].CursoIP/100},
+												{axis:'Ingles',value:data[2][0].Ingles/100},
+												{axis:'Software',value:data[2][0].Software/100},
+												{axis:'Perforacion',value:data[2][0].Perforacion/100},
+												{axis:'Terminacion',value:data[2][0].Terminacion/100},
+												{axis:'Reparacion',value:data[2][0].Reparacion/100}
+											],[//Datos promedio de DM2
+												{axis:'Curso IP',value:data[2][1].CursoIP/100},
+												{axis:'Ingles',value:data[2][1].Ingles/100},
+												{axis:'Software',value:data[2][1].Software/100},
+												{axis:'Perforacion',value:data[2][1].Perforacion/100},
+												{axis:'Terminacion',value:data[2][1].Terminacion/100},
+												{axis:'Reparacion',value:data[2][1].Reparacion/100}			
+											],[//Datos del IP
+												{axis:'Curso IP',value:data[0][ix].CursoIP/100},
+												{axis:'Ingles',value:data[0][ix].Ingles/100},
+												{axis:'Software',value:data[0][ix].Software/100},
+												{axis:'Perforacion',value:data[0][ix].Perforacion/100},
+												{axis:'Terminacion',value:data[0][ix].Terminacion/100},
+												{axis:'Reparacion',value:data[0][ix].Reparacion/100}			
+											]
+										];
+							
+							var color2 = d3.scaleOrdinal()
+								.range([colors[4],colors[5],colors[6]]);
+							radarChartOptions1.color = color2
+							RadarChart("#svg2", data2, radarChartOptions1);
+
+
+							var data3 = [
+											[//Datos del IP
+												{axis:'Predict',value:data[0][ix]['Predict']/100},
+												{axis:'Dsp One',value:data[0][ix]['Dsp One']/100},
+												{axis:'Stress Check',value:data[0][ix]['Stress Check']/100},
+												{axis:'Compass',value:data[0][ix]['Compass']/100},
+												{axis:'Wellcat',value:data[0][ix]['Wellcat']/100}
+											]
+										];
+							
+							var color3 = d3.scaleOrdinal()
+								.range([colors[0]]);
+							radarChartOptions2.color = color3
+							RadarChart("#svg3", data3, radarChartOptions2);
+
+
+							var data4 = [
+											[//Datos del IP
+												{axis:'Cementacion',value:data[0][ix]['Cementacion']/100},
+												{axis:'Registros',value:data[0][ix]['Registros']/100},
+												{axis:'Geomecanica',value:data[0][ix]['Geomecanica']/100},
+												{axis:'Diseno de TRs',value:data[0][ix]['Diseno de TRs']/100},
+												{axis:'Fluidos',value:data[0][ix]['Fluidos']/100},
+												{axis:'Bajo Balance',value:data[0][ix]['Bajo Balance']/100},
+												{axis:'Equipo de perforacion',value:data[0][ix]['Equipo de perforacion']/100},
+												{axis:'Hidraulica',value:data[0][ix]['Hidraulica']/100},
+												{axis:'Direccional',value:data[0][ix]['Direccional']/100},
+												{axis:'Barrenas',value:data[0][ix]['Barrenas']/100},
+												{axis:'Sidetrack',value:data[0][ix]['Sidetrack']/100},
+												{axis:'Apertura de ventana',value:data[0][ix]['Apertura de ventana']/100},
+												{axis:'Prueba de goteo',value:data[0][ix]['Prueba de goteo']/100},
+												{axis:'Prueba de densidad equivalente',value:data[0][ix]['Prueba de densidad equivalente']/100},
+												{axis:'Control de pozo',value:data[0][ix]['Control de pozo']/100},
+												{axis:'Terminacion',value:data[0][ix]['Terminacion']/100},
+												{axis:'Reparacion mayor',value:data[0][ix]['Reparacion mayor']/100}
+											]
+										];
+							
+							var color4 = d3.scaleOrdinal()
+								.range([colors[1]]);
+							radarChartOptions2.color = color4
+							RadarChart("#svg4", data4, radarChartOptions2);
+
+
+							var data5 = [
+											[//Datos del IP
+												{axis:'Seguridad',value:data[0][ix]['Seguridad']/100},
+												{axis:'Disparos',value:data[0][ix]['Disparos']/100},
+												{axis:'Estimulacion',value:data[0][ix]['Estimulacion']/100},
+												{axis:'Sin equipo',value:data[0][ix]['Sin equipo']/100}
+											]
+										];
+							
+							var color5 = d3.scaleOrdinal()
+								.range([colors[2]]);
+							radarChartOptions2.color = color5
+							RadarChart("#svg5", data5, radarChartOptions2);
+
+
+							var data6 = [
+											[//Datos del IP
+												{axis:'Operacion con TF',value:data[0][ix]['Operacion con TF']/100},
+												{axis:'Control de arena',value:data[0][ix]['Control de arena']/100},
+												{axis:'Molienda',value:data[0][ix]['Molienda']/100},
+												{axis:'Pesca',value:data[0][ix]['Pesca']/100},
+												{axis:'Tapon de sal',value:data[0][ix]['Tapon de sal']/100},
+												{axis:'Taponamiento de pozo',value:data[0][ix]['Taponamiento de pozo']/100},
+												{axis:'Prueba de admision',value:data[0][ix]['Prueba de admision']/100},
+												{axis:'Fracturamiento',value:data[0][ix]['Fracturamiento']/100}
+											]
+										];
+							
+							var color6 = d3.scaleOrdinal()
+								.range([colors[3]]);
+							radarChartOptions2.color = color6
+							RadarChart("#svg6", data6, radarChartOptions2);
+							
+
+				})
+	
+				var ix = 0;
+			});
+
 		</script>
 
 	</body>
-</html> 
+</html>
